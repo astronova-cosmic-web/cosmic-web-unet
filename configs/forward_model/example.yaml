@@ -1,0 +1,15 @@
+# Copy to config.yaml in this folder and edit DATASET_ROOT for your machine.
+# INPUT_DIR and OUTPUT_DIR are relative to DATASET_ROOT unless absolute.
+DATASET_ROOT: ../../data
+INPUT_DIR: raw_subset
+OUTPUT_DIR: generated_data/sample_1
+PATCH_SIZE: 256
+NOISE_LEVEL: 0.05
+MASK_FRACTION: 0.15
+SEED: 42
+N_QA_FILES: 4
+MAX_FILES: null
+STAR_RADIUS_PX: [3, 13]
+GAP_HEIGHT_PX: [6, 12]
+TARGET_ZERO_MEAN: true
+QA_FIGURE: qa_forward_model.png

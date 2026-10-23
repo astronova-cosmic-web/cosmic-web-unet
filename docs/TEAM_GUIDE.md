@@ -30,8 +30,8 @@ cosmic-web-unet/
 │   ├── losses/     pixel loss and power-spectrum loss
 │   ├── metrics/    RMSE, SSIM, power spectrum, peak counts
 │   └── train/      training loop, checkpoints, logging
-├── configs/        one YAML file per experiment
-├── notebooks/      exploration and figures (keep heavy code in src/)
+├── configs/        YAML files grouped by experiment
+├── notebooks/      workflows grouped by topic; each folder has its own guide
 ├── scripts/        command-line helpers
 ├── tests/          automatic tests (run on every pull request)
 ├── docs/           notes, reading summaries, data download instructions

@@ -21,8 +21,8 @@ pixel-loss-only U-Net across controlled noise and masking conditions.
 | `src/cosmicweb/losses/` | Pixel loss and power-spectrum loss |
 | `src/cosmicweb/metrics/` | RMSE, SSIM, power spectrum, peak counts |
 | `src/cosmicweb/train/` | Training loop and utilities |
-| `configs/` | Experiment configuration files |
-| `notebooks/` | Exploration and figures |
+| `configs/` | Experiment configuration, grouped by experiment (for example, `configs/forward_model/`) |
+| `notebooks/` | Notebook index and exploration/figure workflows grouped by topic |
 | `scripts/` | Command-line helpers |
 | `tests/` | Automated tests |
 | `docs/`, `reports/` | Documentation, reports and figures |
