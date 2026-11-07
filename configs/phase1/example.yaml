@@ -3,7 +3,8 @@
 # Change DATASET_ROOT for your machine / Google Drive mount.
 # In Google Colab, default is /content/drive/MyDrive/Astronova/Research/DataSet
 DATASET_ROOT: /content/drive/MyDrive/Astronova/Research/DataSet
-INPUT_DIR: Subset
+INPUT_TAR: convergence_gal_mnv0.00000_om0.30000_As2.1000.tar
+INPUT_DIR: convergence_gal_mnv0.00000_om0.30000_As2.1000/Maps05
 OUTPUT_DIR: generated_data/phase1_sample_1
 
 # Survey Weak Lensing Parameters (DES SV / DES Y3 / LSST)
