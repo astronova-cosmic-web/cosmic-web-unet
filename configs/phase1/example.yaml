@@ -1,5 +1,5 @@
 # Configuration for Phase 1: Data Acquisition & Pre-processing
-# (Aligned with phase1.pdf, mnus2.ipynb, and forward_model_pipeline.ipynb)
+# Reference: Liu et al. (2018), Jeffrey et al. (2020)
 # Change DATASET_ROOT for your machine / Google Drive mount.
 # In Google Colab, default is /content/drive/MyDrive/Astronova/Research/DataSet
 DATASET_ROOT: /content/drive/MyDrive/Astronova/Research/DataSet

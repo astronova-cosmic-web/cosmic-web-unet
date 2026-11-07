@@ -1,8 +1,8 @@
 # Phase 1: Data Acquisition & Pre-processing Pipeline
 
-Open [`phase1_data_pipeline.ipynb`](./phase1_data_pipeline.ipynb) in Google Colab to run the data acquisition, noise injection, normalization, and realization-based dataset splitting strictly adhering to `phase1.pdf` and `mnus2.ipynb`.
+Open [`phase1_data_pipeline.ipynb`](./phase1_data_pipeline.ipynb) in Google Colab to run the weak lensing data acquisition, Kaiser–Squires shear forward modeling, survey noise injection, normalization, and realization-based dataset splitting following the methodologies of Liu et al. (2018) and Jeffrey et al. (2020).
 
-The notebook adopts the unified YAML configuration, Google Drive auto-mounting, and path resolution established in `forward_model_pipeline.ipynb`.
+The pipeline uses a unified YAML configuration, Google Drive auto-mounting for Colab, and realization-safe manifest exports.
 
 ## Steps Implemented (Strictly Phase 1)
 - **Step 1.1: Bulk Map Ingestion:** Resolves local or Google Drive paths (`/content/drive/MyDrive/Astronova/Research/DataSet`), recursively discovers MassiveNuS Model 00 512×512 FITS maps, and parses realization IDs (`_XXXXr.fits`).
