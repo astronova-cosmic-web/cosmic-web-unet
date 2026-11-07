@@ -1,0 +1,34 @@
+# Configuration for Phase 1: Data Acquisition & Pre-processing
+# (Aligned with phase1.pdf, mnus2.ipynb, and forward_model_pipeline.ipynb)
+# Change DATASET_ROOT for your machine / Google Drive mount.
+# In Google Colab, default is /content/drive/MyDrive/Astronova/Research/DataSet
+DATASET_ROOT: /content/drive/MyDrive/Astronova/Research/DataSet
+INPUT_DIR: Subset
+OUTPUT_DIR: generated_data/phase1_sample_1
+
+# Survey Weak Lensing Parameters (DES SV / DES Y3 / LSST)
+N_GAL: 6.0                      # Galaxy number density per arcmin^2 (6.0 for DES SV, 30.0 for LSST)
+SIGMA_EPS: 0.28                 # Intrinsic galaxy shape noise dispersion (0.28 for DES SV, 0.30 for LSST)
+A_PIXEL: 0.287                  # Angular area of a single pixel in arcmin^2 (~0.287 for MassiveNuS 512x512)
+SCALE_FACTOR: 10.0              # Global multiplier to step up tiny decimal values to standard ML range
+TARGET_ZERO_MEAN: true          # Subtract full-map mean (DC mode cannot be recovered from lensing shear)
+
+# Dataset Splitting (Split strictly by simulation line-of-sight realization)
+TRAIN_RATIO: 0.70
+VAL_RATIO: 0.15
+TEST_RATIO: 0.15
+SEED: 42
+
+# Optional Survey Mask (chip gaps + star holes)
+INCLUDE_MASK: true
+MASK_FRACTION: 0.15
+STAR_RADIUS_PX: [3, 13]
+GAP_HEIGHT_PX: [6, 12]
+
+# DataLoader streaming
+BATCH_SIZE: 16
+NUM_WORKERS: 2
+
+# Output QA Figure
+QA_FIGURE: qa_phase1_preprocessing.png
+
