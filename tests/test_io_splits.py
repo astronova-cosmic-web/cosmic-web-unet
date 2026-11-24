@@ -103,3 +103,46 @@ def test_leakage_check():
         check_leakage(ok + [_row("val", "d", "1", "h4")])
     with pytest.raises(LeakageError, match="sha1"):  # identical map content under another name
         check_leakage(ok + [_row("val", "d", "3", "h1")])
+
+
+def test_transient_read_errors_are_retried(tmp_path, monkeypatch):
+    import cosmicweb.data.io as io_mod
+
+    monkeypatch.setattr(io_mod, "RETRY_DELAY_S", 0.0)
+    folder = tmp_path / "raw"
+    make_map_folder(folder, n_real=3)
+    tar = tar_folder(folder, tmp_path / "maps.tar")
+    with MapSource(folder) as d:
+        expected = dict(d.read([m.name for m in d.maps()]))
+    with MapSource(tar, progress=True) as src:
+        real, calls = src._tar.extractfile, []
+
+        def flaky(member):  # fails once, like a Drive I/O hiccup; the reopened handle is healthy
+            calls.append(member)
+            if len(calls) == 1:
+                raise OSError(5, "Input/output error")
+            return real(member)
+
+        src._tar.extractfile = flaky
+        with pytest.warns(RuntimeWarning, match="retrying"):
+            got = dict(src.read(list(expected)))
+    assert got == expected
+
+
+def test_persistent_read_errors_raise(tmp_path, monkeypatch):
+    import types
+
+    import cosmicweb.data.io as io_mod
+
+    monkeypatch.setattr(io_mod, "RETRY_DELAY_S", 0.0)
+    folder = tmp_path / "raw"
+    make_map_folder(folder, n_real=1)
+    with MapSource(folder) as src:
+        name = src.maps()[0].name
+
+        def broken():
+            raise OSError(5, "Input/output error")
+
+        src._index[name] = types.SimpleNamespace(read_bytes=broken)
+        with pytest.warns(RuntimeWarning), pytest.raises(OSError):
+            list(src.read([name]))

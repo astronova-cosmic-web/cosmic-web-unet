@@ -10,6 +10,7 @@ import io
 import math
 import re
 import tarfile
+import time
 import warnings
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
@@ -21,6 +22,8 @@ from astropy.io import fits
 __all__ = ["MapInfo", "parse_map_name", "load_kappa", "MapSource"]
 
 FITS_SUFFIXES = (".fits", ".fit")
+READ_ATTEMPTS = 4
+RETRY_DELAY_S = 2.0  # doubled after each failed attempt
 _Z_RE = re.compile(r"_z(\d+(?:\.\d+)?)", re.IGNORECASE)
 _R_RE = re.compile(r"_(\d+)r(?=[._]|$)", re.IGNORECASE)
 
@@ -71,9 +74,12 @@ class MapSource:
     Use as a context manager. ``maps()`` lists them; ``read(names)`` yields
     ``(name, bytes)`` in the order that is cheapest for the storage (archive order
     for tar files, so each member is read once, front to back).
+
+    Reads that fail with an I/O error (for example a network-mounted Google
+    Drive hiccup) are retried a few times before giving up.
     """
 
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, progress: bool = False):
         self.path = Path(path)
         self._tar: tarfile.TarFile | None = None
         self._index: dict[str, object] = {}
@@ -81,7 +87,7 @@ class MapSource:
             entries = ((p.name, p) for p in self.path.rglob("*") if p.is_file())
         elif self.path.is_file() and tarfile.is_tarfile(self.path):
             self._tar = tarfile.open(self.path, "r:*")
-            entries = ((PurePosixPath(m.name).name, m) for m in self._tar.getmembers() if m.isfile())
+            entries = ((PurePosixPath(m.name).name, m) for m in self._scan_tar(progress) if m.isfile())
         else:
             raise FileNotFoundError(f"{self.path} is neither a folder nor a tar archive")
         for base, ref in entries:
@@ -90,6 +96,37 @@ class MapSource:
             if base in self._index:
                 raise ValueError(f"two maps named {base!r} in {self.path}; map names must be unique")
             self._index[base] = ref
+
+    def _scan_tar(self, progress: bool) -> Iterator[tarfile.TarInfo]:
+        """Read every member header once (needed to list a tar), showing bytes scanned."""
+        bar = None
+        if progress:
+            try:
+                from tqdm.auto import tqdm
+                bar = tqdm(total=self.path.stat().st_size, unit="B", unit_scale=True, desc="Indexing tar")
+            except ImportError:
+                pass
+        try:
+            for member in self._tar:  # iterating also caches members, so reads never rescan
+                if bar is not None:
+                    bar.update(max(0, member.offset_data + member.size - bar.n))
+                yield member
+        finally:
+            if bar is not None:
+                bar.close()
+
+    def _read_with_retry(self, name: str, read):
+        for attempt in range(READ_ATTEMPTS):
+            try:
+                return read()
+            except OSError as exc:
+                if attempt == READ_ATTEMPTS - 1:
+                    raise
+                warnings.warn(f"{name}: read failed ({exc}); retrying", RuntimeWarning, stacklevel=3)
+                time.sleep(RETRY_DELAY_S * 2**attempt)
+                if self._tar is not None:  # reopen: the old handle may be broken. Cached TarInfo
+                    self._tar.close()      # objects still work, so this does not rescan.
+                    self._tar = tarfile.open(self.path, "r:*")
 
     def __enter__(self) -> MapSource:
         return self
@@ -112,8 +149,8 @@ class MapSource:
             raise KeyError(f"maps not in {self.path}: {missing[:5]}")
         if self._tar is None:
             for n in sorted(names):
-                yield n, self._index[n].read_bytes()
+                yield n, self._read_with_retry(n, self._index[n].read_bytes)
         else:
             for n in sorted(names, key=lambda n: self._index[n].offset):
-                fh = self._tar.extractfile(self._index[n])  # TarInfo lookup: no rescan
-                yield n, fh.read()
+                # extractfile(TarInfo) seeks straight to the member: no rescan
+                yield n, self._read_with_retry(n, lambda m=self._index[n]: self._tar.extractfile(m).read())

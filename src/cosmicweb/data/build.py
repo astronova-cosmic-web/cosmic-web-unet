@@ -76,7 +76,7 @@ def build_dataset(cfg: DataConfig, *, overwrite: bool = False, progress: bool = 
     if (out / "dataset.json").exists() and not overwrite:
         raise FileExistsError(f"{out} already holds a built dataset; pass overwrite=True to rebuild")
 
-    with MapSource(bc.source) as src:
+    with MapSource(bc.source, progress=progress) as src:
         maps = src.maps()
         if bc.redshifts is not None:
             maps = [m for m in maps if any(math.isclose(m.redshift, z, abs_tol=1e-6) for z in bc.redshifts)]
