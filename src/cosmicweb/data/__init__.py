@@ -2,11 +2,14 @@
 
 from .forward_model import SYMMETRIES, apply_symmetry, kappa_to_shear, shear_to_kappa
 from .noise import add_shape_noise, pixel_area_arcmin2, pixel_noise_sigma
+from .masks import MaskSpec, generate_mask
 
 __all__ = [
+    "MaskSpec",
     "SYMMETRIES",
     "add_shape_noise",
     "apply_symmetry",
+    "generate_mask",
     "kappa_to_shear",
     "pixel_area_arcmin2",
     "pixel_noise_sigma",
