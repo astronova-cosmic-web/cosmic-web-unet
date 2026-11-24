@@ -10,7 +10,7 @@ dist/
 .ipynb_checkpoints/
 
 # Project data and outputs (never commit these)
-data/
+/data/
 checkpoints/
 runs/
 wandb/

@@ -1,0 +1,31 @@
+# Pixel-loss (MSE) U-Net baseline (tasks 2.2-2.5). Unlisted settings use the
+# defaults in src/cosmicweb/train/config.py. Change settings per run without
+# editing this file, e.g.:
+#   python scripts/train.py --config configs/baseline.yaml --set train.seed=1 --set data.noise=low
+
+data:
+  config: data.yaml          # the data pipeline config, relative to this file
+  noise: high                # level names from data.yaml (noise × mask grid: task 3.4)
+  mask: mid
+  train: {mode: random, patch_size: 256, crops_per_map: 4, augment: true, resample_each_epoch: true}
+  val: {mode: tiles, patch_size: 256}
+  batch_size: 16
+  num_workers: 2
+
+model: {base_channels: 32, depth: 4, norm: batch, padding_mode: zeros}
+
+loss: {name: mse}
+
+optim: {name: adamw, lr: 1.0e-3, weight_decay: 0.0}
+schedule: {name: cosine, min_lr: 1.0e-5}
+
+train:
+  epochs: 30
+  seed: 0                    # baseline: seeds 0, 1, 2 (task 2.5)
+  amp: true                  # mixed precision on GPU
+  grad_clip: null
+  early_stopping_patience: null
+
+output:
+  runs_dir: runs             # on Colab, point this at Drive so checkpoints survive the session
+  tensorboard: true
