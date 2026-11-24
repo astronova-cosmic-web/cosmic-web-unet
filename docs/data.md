@@ -9,9 +9,14 @@ We use the MassiveNuS convergence maps (Liu et al. 2018), fiducial massless-neut
 `convergence_gal_mnv0.00000_om0.30000_As2.1000.tar`: 512 × 512 pixel maps, 3.5° × 3.5°,
 one FITS file per line of sight (`WLconv_z<redshift>_<NNNN>r.fits`).
 
-Put the `.tar` on the shared Drive under `Astronova/Research/DataSet/`. **Never commit data to
-Git**; `.gitignore` blocks `*.fits` and `*.npy`. You do not need to extract the archive: the
-pipeline reads the `.tar` directly (or an extracted folder; both give identical results).
+Put the `.tar` on the shared Drive under `Astronova/Research/DataSet/` (or add a Drive shortcut to
+it there). The link is shared in the issues, not in this repo. **Never commit data to Git**;
+`.gitignore` blocks `*.fits` and `*.npy`.
+
+The archive is about 53 GB, roughly 50,000 maps of 1 MiB, covering several source redshifts.
+**Do not extract it, or copy it to Colab's disk.** The pipeline reads the `.tar` directly: it
+scans the archive once to list it, then reads only the redshifts in `build.redshifts` (default
+z = 0.5, about 10,000 maps). An extracted folder also works and gives identical results.
 
 ## 2. Build the dataset (once)
 
