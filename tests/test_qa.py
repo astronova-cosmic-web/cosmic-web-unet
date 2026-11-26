@@ -50,3 +50,4 @@ def test_plot_condition_grid(built, tmp_path):
     )
     assert out.exists() and out.stat().st_size > 0
     assert len([ax for ax in fig.axes if ax.get_title()]) == 4
+

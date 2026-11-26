@@ -38,3 +38,4 @@ Noise and masks are generated on the fly from `dataset_v1`, so finalizing these 
 
 ### High Noise (`σ_pix = 0.197`)
 ![QA val high noise mid mask](figures/qa_val_high_mid.png)
+

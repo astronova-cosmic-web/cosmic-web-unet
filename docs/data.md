@@ -99,3 +99,9 @@ two splits.
 **Caveat:** MassiveNuS ray-traces its many realizations through one N-body simulation per
 cosmology, so different lines of sight are not fully independent. Splitting by realization
 removes shared maps, not all correlation. Mention this in the methods section.
+
+## 5. Where results live
+
+- **Built data (`.npy`):** Google Drive (`Astronova/Research/DataSet/`).
+- **Training logs & sample predictions:** Weights & Biases (`wandb/` is ignored by Git).
+- **Milestone summaries & QA plots:** `reports/` (see `reports/README.md` and `reports/phase1/README.md`).
