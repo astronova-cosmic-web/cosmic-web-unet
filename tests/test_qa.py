@@ -5,7 +5,7 @@ matplotlib = pytest.importorskip("matplotlib")
 matplotlib.use("Agg")
 
 from cosmicweb.data import ShearMapDataset  # noqa: E402
-from cosmicweb.data.qa import plot_condition_grid, plot_examples  # noqa: E402
+from cosmicweb.data.qa import plot_condition_grid, plot_examples, write_phase1_report  # noqa: E402
 
 
 def test_plot_examples_full_and_clean_shear(built, tmp_path):
@@ -50,4 +50,16 @@ def test_plot_condition_grid(built, tmp_path):
     )
     assert out.exists() and out.stat().st_size > 0
     assert len([ax for ax in fig.axes if ax.get_title()]) == 4
+
+
+def test_write_phase1_report(built, tmp_path):
+    cfg, meta = built
+    report_dir = tmp_path / "phase1_report"
+    readme = write_phase1_report(cfg.build.output_dir, report_dir, cfg.observation)
+    assert readme.exists()
+    text = readme.read_text(encoding="utf-8")
+    assert meta["fingerprint"][:16] in text
+    assert (report_dir / "figures" / "qa_grid_val.png").exists()
+    for noise in cfg.observation.noise_levels:
+        assert (report_dir / "figures" / f"qa_val_{noise}_mid.png").exists()
 
