@@ -10,7 +10,7 @@ from cosmicweb.data.qa import plot_condition_grid, plot_examples, write_phase1_r
 
 def test_plot_examples_full_and_clean_shear(built, tmp_path):
     cfg, _ = built
-    ds = ShearMapDataset(cfg.build.output_dir, "val", cfg.observation, "mid", "mid", mode="full")
+    ds = ShearMapDataset(cfg.build.output_dir, "val", cfg.observation, "high", "mid", mode="full")
 
     out_clean = tmp_path / "qa_clean.png"
     fig = plot_examples(ds, indices=(0,), path=out_clean, show_clean_shear=True)
@@ -27,7 +27,7 @@ def test_plot_examples_full_and_clean_shear(built, tmp_path):
 def test_plot_examples_random_crop(built, tmp_path):
     cfg, _ = built
     ds = ShearMapDataset(
-        cfg.build.output_dir, "train", cfg.observation, "low", "low", mode="random", patch_size=32
+        cfg.build.output_dir, "train", cfg.observation, "low", "mid", mode="random", patch_size=32
     )
     out = tmp_path / "qa_crop.png"
     fig = plot_examples(ds, indices=(0,), path=out, show_clean_shear=True)
@@ -45,7 +45,7 @@ def test_plot_condition_grid(built, tmp_path):
         split="val",
         index=0,
         noise_levels=("low", "high"),
-        mask_levels=("low", "high"),
+        mask_levels=("none", "mid"),
         path=out,
     )
     assert out.exists() and out.stat().st_size > 0
