@@ -1,0 +1,41 @@
+# Data pipeline config (tasks 1.2–1.5). Copy this file, then edit dataset_root
+# for your machine, or pass --dataset-root to scripts/build_dataset.py.
+# Relative `source` and `output_dir` are resolved from dataset_root.
+
+dataset_root: /content/drive/MyDrive/Astronova/Research/DataSet
+
+# A .tar archive of MassiveNuS FITS maps, or a folder containing them (searched
+# recursively). Both give byte-identical datasets.
+source: convergence_gal_mnv0.00000_om0.30000_As2.1000.tar
+output_dir: generated_data/dataset_v1
+
+# --- Building the frozen clean-κ dataset -----------------------------------
+build:
+  redshifts: [0.5]          # source redshifts to keep (from _z0.50_ in file names); null = all
+  max_maps: null            # e.g. 50 for a quick test build (first N by name)
+  map_size_deg: 3.5         # MassiveNuS maps are 3.5° × 3.5°; checked against the FITS ANGLE header if present
+  split_fractions: {train: 0.70, val: 0.15, test: 0.15}   # of lines of sight (realizations)
+  seed: 42                  # split shuffle
+
+# --- Generating observations on the fly ------------------------------------
+observation:
+  seed: 1234                # noise/mask seed. Keep fixed: val/test inputs depend on it
+  sigma_e: 0.28             # TOTAL intrinsic ellipticity dispersion; σ_pix = σ_e / sqrt(2 n_gal A_pix)
+  scale: 10.0               # multiply shear and κ by this for the network (Jeffrey et al. 2020)
+  zero_mean_target: true    # remove each full map's mean κ (shear cannot measure it)
+
+  # Noise levels (task 1.3). n_gal in galaxies/arcmin²; or give sigma_pix directly.
+  # PLACEHOLDER values; confirm the final three with the advisor (task 0.4).
+  noise_levels:
+    none: {sigma_pix: 0.0}  # noiseless, for debugging
+    low:  {n_gal: 30.0}     # LSST-like
+    mid:  {n_gal: 15.0}
+    high: {n_gal: 6.0}      # DES SV-like
+
+  # Mask levels (task 1.4). fraction = total masked fraction incl. edges and gap.
+  # Sizes are in pixels (1 px ≈ 0.41 arcmin for 512² maps of 3.5°).
+  mask_levels:
+    none: {fraction: 0.0}
+    low:  {fraction: 0.05, edge_px: 4, gap_height_px: [4, 8],  star_radius_px: [2, 8]}
+    mid:  {fraction: 0.15, edge_px: 8, gap_height_px: [6, 12], star_radius_px: [3, 13]}
+    high: {fraction: 0.30, edge_px: 8, gap_height_px: [6, 12], star_radius_px: [3, 20]}

@@ -42,7 +42,8 @@ On Colab or Kaggle, do **not** reinstall `torch` or `numpy`; use the preinstalle
 
 ## Data
 
-Data is **not** stored in this repository. See `docs/` for download instructions.
+Data is **not** stored in this repository. See [`docs/data.md`](docs/data.md) for download
+instructions and how to build the dataset (`scripts/build_dataset.py`).
 
 - MassiveNuS convergence maps (Liu et al. 2018), the ground truth for training and testing
 - DES Y3 shape catalogue (Gatti et al. 2021), used only if the Week 33 feasibility gate passes
